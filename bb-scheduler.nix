@@ -4,8 +4,8 @@ let
   bb-remote-execution-flake = builtins.getFlake (toString ./bb-remote-execution);
   bb-re-pkg = bb-remote-execution-flake.packages.${pkgs.system}.default;
 
-  cas-host = "meitner";
-  scheduler-host = "meitner";
+  cas-host = "feynman";
+  scheduler-host = "feynman";
 
   sched-dir = "/var/lib/rbe-sched";
 

@@ -5,8 +5,8 @@ let
   bb-re-pkg = bb-remote-execution-flake.packages.${pkgs.system}.default;
 
   # Hostnames that run the bb-storage and bb-scheduler
-  cas-host = "meitner";
-  scheduler-host = "meitner";
+  cas-host = "feynman";
+  scheduler-host = "feynman";
 
   base-dir = "/var/lib/rbe-runner";
   use-cores = 24;   # Can this be queried at eval time ?
