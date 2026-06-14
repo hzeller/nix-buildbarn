@@ -2,10 +2,10 @@
 
 let
   # Import the bb-storage flake
-  bb-storage-flake = builtins.getFlake "/home/hzeller/buildbarn-3/bb-storage";
+  bb-storage-flake = builtins.getFlake (toString ./bb-storage);
   bb-storage-pkg = bb-storage-flake.packages.${pkgs.system}.default;
 
-  blobDir = "/var/lib/buildbarn-storage";
+  blob-dir = "/var/lib/rbe-storage";
 
   bb-storage-config = {
     contentAddressableStorage = {
@@ -13,7 +13,7 @@ let
         local = {
           keyLocationMapOnBlockDevice = {
             file = {
-              path = "${blobDir}/cas_index";
+              path = "${blob-dir}/cas_index";
               sizeBytes = 16 * 1024 * 1024;
             };
           };
@@ -25,7 +25,7 @@ let
           blocksOnBlockDevice = {
             source = {
               file = {
-                path = "${blobDir}/cas_blocks";
+                path = "${blob-dir}/cas_blocks";
                 sizeBytes = 10 * 1024 * 1024 * 1024; # 10 GB
               };
             };
@@ -42,7 +42,7 @@ let
         local = {
           keyLocationMapOnBlockDevice = {
             file = {
-              path = "${blobDir}/ac_index";
+              path = "${blob-dir}/ac_index";
               sizeBytes = 16 * 1024 * 1024;
             };
           };
@@ -54,7 +54,7 @@ let
           blocksOnBlockDevice = {
             source = {
               file = {
-                path = "${blobDir}/ac_blocks";
+                path = "${blob-dir}/ac_blocks";
                 sizeBytes = 1 * 1024 * 1024 * 1024; # 1 GB
               };
             };
@@ -86,11 +86,11 @@ let
 
 in
 {
-  users.groups.buildbarn-storage = {};
-  users.users.buildbarn-storage = {
+  users.groups.rbe-storage = {};
+  users.users.rbe-storage = {
     isSystemUser = true;
-    group = "buildbarn-storage";
-    home = blobDir;
+    group = "rbe-storage";
+    home = blob-dir;
     createHome = true;
   };
 
@@ -100,24 +100,24 @@ in
     after = [ "network.target" ];
 
     serviceConfig = {
-      User = "buildbarn-storage";
-      Group = "buildbarn-storage";
+      User = "rbe-storage";
+      Group = "rbe-storage";
       # Create sparse files if they do not exist
       ExecStartPre = pkgs.writeShellScript "bb-storage-pre" ''
-        mkdir -p ${blobDir}
-        
-        if [ ! -f ${blobDir}/cas_index ]; then
-          truncate -s 16M ${blobDir}/cas_index
+        mkdir -p ${blob-dir}
+
+        if [ ! -f ${blob-dir}/cas_index ]; then
+          truncate -s 16M ${blob-dir}/cas_index
         fi
-        if [ ! -f ${blobDir}/cas_blocks ]; then
-          truncate -s 10G ${blobDir}/cas_blocks
+        if [ ! -f ${blob-dir}/cas_blocks ]; then
+          truncate -s 10G ${blob-dir}/cas_blocks
         fi
-        
-        if [ ! -f ${blobDir}/ac_index ]; then
-          truncate -s 16M ${blobDir}/ac_index
+
+        if [ ! -f ${blob-dir}/ac_index ]; then
+          truncate -s 16M ${blob-dir}/ac_index
         fi
-        if [ ! -f ${blobDir}/ac_blocks ]; then
-          truncate -s 1G ${blobDir}/ac_blocks
+        if [ ! -f ${blob-dir}/ac_blocks ]; then
+          truncate -s 1G ${blob-dir}/ac_blocks
         fi
       '';
       ExecStart = "${bb-storage-pkg}/bin/bb_storage ${configFile}";
@@ -126,7 +126,7 @@ in
       ProtectSystem = "strict";
       ProtectHome = true;
       PrivateTmp = true;
-      ReadWritePaths = [ blobDir ];
+      ReadWritePaths = [ blob-dir ];
     };
   };
 }
