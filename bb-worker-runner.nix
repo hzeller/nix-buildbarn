@@ -50,13 +50,13 @@ let
         {
           endpoint = { address = "unix://${base-dir}/worker-${id}/runner.sock"; };
           concurrency = use-cores;
-          workerId = { id = "${id}-empty"; };
+          workerId = { id = "empty-${id}-${config.networking.hostName}"; };
           platform = {};
         }
         {
           endpoint = { address = "unix://${base-dir}/worker-${id}/runner.sock"; };
           concurrency = use-cores;
-          workerId = { id = "${id}-linux"; };
+          workerId = { id = "linux-${id}-${config.networking.hostName}"; };
           platform = {
             properties = [
               { name = "OSFamily"; value = "linux"; }
