@@ -2,6 +2,21 @@
 
 WIP
 
+## Configurations to distribute builds to various nix machines
+
+The repo contains flakes to build the storage, scheduler and worker binaries
+to run buildbarn. Also, configuration and service definitions to make everything
+a simple change in the configuration.nix.
+
+Since the runner calls will receive command lines that reference /nix/store/
+paths that might not necessarily exist on the target machine there is a simple
+`nix-wrapper.sh` script that calls `nix store --realise` to make it happen.
+
+For that to work, we needed to convince the runner to prepend this script
+to the command line; since were was no such option yet, a quick hack
+to get it from an environment variable [has been added](./bb-remote-execution/patches/runner-command-wrapper.patch) (TODO: think about upstreaming something
+like that, but possibly should be put in the configuration file).
+
 ## Setting up buildbarn
 
 There are three components: bb-storage, bb-scheduler and bb-worker-runner.
@@ -50,8 +65,13 @@ Let's assume the hostname is `rbe`, this is how you then invoke bazel:
 bazel build --remote_cache=grpc://rbe:8980 --remote_executor=grpc://rbe:8981 ...
 ```
 
-(you can also put it in your `~/.bazelrc`, but remember to comment out when
-you're not on that network
+The machine you're running `bazel` on also needs to be a nix machine, as the
+various paths to compilers and tools must be /nix/store references that can
+be resolved by the `nix-wrapper.sh`.
+
+Of course, adding this to the command line every time is tedious, so you can
+also put it in your `~/.bazelrc`, but remember to comment out when
+you're not on that network :)
 
 ```
 build --remote_cache=grpc://rbe:8980
