@@ -1,0 +1,19 @@
+commit bff5a2025e38011719bc5501f4ddab7662e1de89
+Author: Henner Zeller <h.zeller@acm.org>
+Date:   Sat Jun 13 17:51:49 2026 +0200
+
+    Make compile locally
+
+diff --git a/cmd/bb_storage/main.go b/cmd/bb_storage/main.go
+index 192fcb5..4e5aa2f 100644
+--- a/cmd/bb_storage/main.go
++++ b/cmd/bb_storage/main.go
+@@ -201,7 +201,7 @@ func main() {
+ 						),
+ 					)
+ 					bytestream.RegisterByteStreamServer(
+-						s,
++						s.(*grpc.Server),
+ 						grpcservers.NewByteStreamServer(
+ 							contentAddressableStorage,
+ 							1<<16,
