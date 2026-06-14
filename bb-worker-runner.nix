@@ -12,6 +12,8 @@ let
   use-cores = 24;   # Can this be queried at eval time ?
 
   # --- bb_runner ---
+  # TODO: maybe not needed anymore with id. Initially I planned to have multiple
+  # runners, but turns out a single one is sufficient with concurrency.
   # Generator function for a runner
   mkRunnerConfig = id: {
     buildDirectoryPath = "${base-dir}/worker-${id}/build";
@@ -88,8 +90,8 @@ in
       User = "rbe-runner";
       Group = "rbe-runner";
       ExecStartPre = pkgs.writeShellScript "bb-runner-pre" ''
-        mkdir -p ${base-dir}/worker/build
-        rm -f ${base-dir}/worker/runner.sock
+        mkdir -p ${base-dir}/worker-1/build
+        rm -f ${base-dir}/worker-1/runner.sock
       '';
       ExecStart = "${bb-re-pkg}/bin/bb_runner ${runnerConfigFile}";
       Restart = "always";
@@ -113,10 +115,10 @@ in
       User = "rbe-runner";
       Group = "rbe-runner";
       ExecStartPre = pkgs.writeShellScript "bb-worker-pre" ''
-        mkdir -p ${base-dir}/worker/build
-        mkdir -p ${base-dir}/worker/cache
+        mkdir -p ${base-dir}/worker-1/build
+        mkdir -p ${base-dir}/worker-1/cache
         # Wait for the runner socket to be available
-        while [ ! -S ${base-dir}/worker/runner.sock ]; do
+        while [ ! -S ${base-dir}/worker-1/runner.sock ]; do
           sleep 0.5
         done
       '';
