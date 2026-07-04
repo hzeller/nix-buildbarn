@@ -86,6 +86,19 @@ in
     wantedBy = [ "multi-user.target" ];
     after = [ "network.target" ];
 
+    path = with pkgs; [
+      coreutils
+      bash
+      gawk gnused gnutar
+      gzip bzip2 xz zstd unzip
+      file findutils
+      git
+    ];
+
+    # To inspect e.g. the /tmp directory, use nsenter
+    # to look at the namespace.
+    #   systemctl show -p MainPID  bb-runner.service
+    #   sudo nsenter -t <pid> -m ls -la /tmp
     serviceConfig = {
       User = "rbe-runner";
       Group = "rbe-runner";

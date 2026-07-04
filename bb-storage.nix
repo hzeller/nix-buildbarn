@@ -5,7 +5,7 @@ let
   bb-storage-flake = builtins.getFlake (toString ./bb-storage);
   bb-storage-pkg = bb-storage-flake.packages.${pkgs.system}.default;
 
-  blob-dir = "/var/lib/rbe-storage";
+  blob-dir = "/var/lib/rbe-storage1";
 
   bb-storage-config = {
     contentAddressableStorage = {
