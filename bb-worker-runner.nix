@@ -71,6 +71,17 @@ let
   runnerConfigFile = pkgs.writeText "bb_runner.json" (builtins.toJSON (mkRunnerConfig "1"));
   workerConfigFile = pkgs.writeText "bb_worker.json" (builtins.toJSON (mkWorkerConfig "1"));
 
+  runner-fhs = pkgs.buildFHSEnv {
+    name = "bb-runner-fhs";
+    targetPkgs = pkgs: with pkgs; [
+      coreutils bash gawk gnused gnutar
+      gzip bzip2 xz zstd unzip
+      file findutils git python3 timg
+      glibc gcc zlib
+    ];
+    runScript = "${bb-re-pkg}/bin/bb_runner";
+  };
+
 in
 {
   users.groups.rbe-runner = {};
@@ -106,15 +117,13 @@ in
         mkdir -p ${base-dir}/worker-1/build
         rm -f ${base-dir}/worker-1/runner.sock
       '';
-      ExecStart = "${bb-re-pkg}/bin/bb_runner ${runnerConfigFile}";
+      ExecStart = "${runner-fhs}/bin/bb-runner-fhs ${runnerConfigFile}";
       Restart = "always";
       RestartSec = "3s";
       ProtectSystem = "strict";
       ProtectHome = true;
       PrivateTmp = true;
       ReadWritePaths = [ base-dir ];
-      # This is our launcher script that makes nix store paths happen if needed.
-      Environment = [ "BB_RUNNER_COMMAND_WRAPPER=${./nix-runner-wrapper.sh}" ];
     };
   };
 
