@@ -9,7 +9,7 @@ let
   scheduler-host = "feynman";
 
   base-dir = "/var/lib/rbe-runner";
-  use-cores = 24;   # Can this be queried at eval time ?
+  default-use-cores = 24;
 
   # --- bb_runner ---
   # TODO: maybe not needed anymore with id. Initially I planned to have multiple
@@ -49,13 +49,13 @@ let
       runners = [
         {
           endpoint = { address = "unix://${base-dir}/worker-${id}/runner.sock"; };
-          concurrency = use-cores;
+          concurrency = default-use-cores;
           workerId = { id = "empty-${id}-${config.networking.hostName}"; };
           platform = {};
         }
         {
           endpoint = { address = "unix://${base-dir}/worker-${id}/runner.sock"; };
-          concurrency = use-cores;
+          concurrency = default-use-cores;
           workerId = { id = "linux-${id}-${config.networking.hostName}"; };
           platform = {
             properties = [
@@ -141,12 +141,17 @@ in
       ExecStartPre = pkgs.writeShellScript "bb-worker-pre" ''
         mkdir -p ${base-dir}/worker-1/build
         mkdir -p ${base-dir}/worker-1/cache
+
+        # Use 1.2x physical cores for concurrency. We use the fixed worker
+        # config file as template and patch it up at start-up.
+        CORES=$(($(nproc) * 12 / 10))
+        ${pkgs.jq}/bin/jq --argjson cores "$CORES" '.buildDirectories[].runners[].concurrency = $cores' ${workerConfigFile} > ${base-dir}/worker-1/bb_worker.json
         # Wait for the runner socket to be available
         while [ ! -S ${base-dir}/worker-1/runner.sock ]; do
           sleep 0.5
         done
       '';
-      ExecStart = "${bb-re-pkg}/bin/bb_worker ${workerConfigFile}";
+      ExecStart = "${bb-re-pkg}/bin/bb_worker ${base-dir}/worker-1/bb_worker.json";
       Restart = "always";
       RestartSec = "3s";
       ProtectSystem = "strict";
