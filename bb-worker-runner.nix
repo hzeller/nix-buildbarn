@@ -97,16 +97,6 @@ in
     wantedBy = [ "multi-user.target" ];
     after = [ "network.target" ];
 
-    path = with pkgs; [
-      coreutils
-      bash
-      gawk gnused gnutar
-      gzip bzip2 xz zstd unzip
-      file findutils
-      git
-      python3
-    ];
-
     # To inspect e.g. the /tmp directory, use nsenter
     # See README.md
     serviceConfig = {
