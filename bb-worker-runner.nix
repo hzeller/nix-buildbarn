@@ -93,12 +93,12 @@ in
       gzip bzip2 xz zstd unzip
       file findutils
       git
+      python3
+      timg
     ];
 
     # To inspect e.g. the /tmp directory, use nsenter
-    # to look at the namespace.
-    #   systemctl show -p MainPID  bb-runner.service
-    #   sudo nsenter -t <pid> -m ls -la /tmp
+    # See README.md
     serviceConfig = {
       User = "rbe-runner";
       Group = "rbe-runner";
@@ -114,7 +114,7 @@ in
       PrivateTmp = true;
       ReadWritePaths = [ base-dir ];
       # This is our launcher script that makes nix store paths happen if needed.
-      Environment = [ "BB_RUNNER_COMMAND_WRAPPER=${./nix-wrapper.sh}" ];
+      Environment = [ "BB_RUNNER_COMMAND_WRAPPER=${./nix-runner-wrapper.sh}" ];
     };
   };
 

@@ -56,6 +56,33 @@ that the hostnames point to to your scheduler machine):
     ];
 ```
 
+## Debugging
+
+### journalctl
+
+Just looking at the logs of the services can be helpful
+```
+journalctl --since="1 hour ago" -u bb-runner.service
+```
+
+### Environment
+
+e.g.
+
+```
+sudo cat /proc/$(systemctl show -p MainPID --value bb-runner.service)/environ
+```
+
+### nsenter
+The various services are running as systemd services, so simplest way to see
+what is going on there in the local file-system is to use `nsenter` to take a
+look.
+
+```
+sudo nsenter -t $(systemctl show -p MainPID --value bb-runner.service) -m sh
+sh-5.3# ls
+```
+
 ## Using buildbarn from bazel
 
 
