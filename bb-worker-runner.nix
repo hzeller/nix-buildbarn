@@ -76,7 +76,7 @@ let
     targetPkgs = pkgs: with pkgs; [
       coreutils bash gawk gnused gnutar
       gzip bzip2 xz zstd unzip
-      file findutils git python3 timg
+      file findutils git python3
       glibc glibc.dev gcc zlib zlib.dev linuxHeaders
     ];
     runScript = "${bb-re-pkg}/bin/bb_runner";
@@ -105,7 +105,6 @@ in
       file findutils
       git
       python3
-      timg
     ];
 
     # To inspect e.g. the /tmp directory, use nsenter

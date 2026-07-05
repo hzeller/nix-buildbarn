@@ -8,9 +8,12 @@ The repo contains flakes to build the storage, scheduler and worker binaries
 to run buildbarn. Also, configuration and service definitions to make everything
 a simple change in the configuration.nix.
 
-Since the runner calls will receive command lines that reference /nix/store/
-paths that might not necessarily exist on the target machine there is a simple
-`nix-wrapper.sh` script that calls `nix store --realise` to make it happen.
+The runner runs in an FHS environment. Since we most likely will use this in
+an all-nix environment, so we also fix up references to /nix/store paths.
+Any `/nix/store/` paths found in the command will be checked if they exist
+on the runner machine and potentially fixd up locally:
+the `nix-runner-wrapper.sh` script that calls `nix store --realise` to make it
+happen.
 
 For that to work, we needed to convince the runner to prepend this script
 to the command line; since were was no such option yet, a quick hack
@@ -61,6 +64,7 @@ that the hostnames point to to your scheduler machine):
 ### journalctl
 
 Just looking at the logs of the services can be helpful
+
 ```
 journalctl --since="1 hour ago" -u bb-runner.service
 ```
@@ -83,7 +87,12 @@ sudo nsenter -t $(systemctl show -p MainPID --value bb-runner.service) -m sh
 sh-5.3# ls
 ```
 
+Note, to inspect the FHS environment is spawned by bwrap, we've to be looking
+at the PID of the `bb_runner`
+
+```
 sudo nsenter -t $(pgrep -x bb_runner) -m ls -l lib bin usr/bin
+```
 
 ## Using buildbarn from bazel
 
