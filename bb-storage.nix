@@ -5,7 +5,13 @@ let
   bb-storage-flake = builtins.getFlake (toString ./bb-storage);
   bb-storage-pkg = bb-storage-flake.packages.${pkgs.system}.default;
 
-  blob-dir = "/var/lib/rbe-storage1";
+  blob-dir = "/var/lib/rbe-storage";
+
+  casBlocksSizeBytes = 100 * 1024 * 1024 * 1024;  // 100 G
+  casIndexSizeBytes = 256 * 1024 * 1024;
+
+  acBlocksSizeBytes = 8 * 1024 * 1024 * 1024;   // 8G action cache
+  acIndexSizeBytes = 64 * 1024 * 1024;
 
   bb-storage-config = {
     contentAddressableStorage = {
@@ -14,7 +20,7 @@ let
           keyLocationMapOnBlockDevice = {
             file = {
               path = "${blob-dir}/cas_index";
-              sizeBytes = 16 * 1024 * 1024;
+              sizeBytes = casIndexSizeBytes;
             };
           };
           keyLocationMapMaximumGetAttempts = 16;
@@ -26,7 +32,7 @@ let
             source = {
               file = {
                 path = "${blob-dir}/cas_blocks";
-                sizeBytes = 50 * 1024 * 1024 * 1024; # 50 GB
+                sizeBytes = casBlocksSizeBytes;
               };
             };
             spareBlocks = 3;
@@ -43,7 +49,7 @@ let
           keyLocationMapOnBlockDevice = {
             file = {
               path = "${blob-dir}/ac_index";
-              sizeBytes = 16 * 1024 * 1024;
+              sizeBytes = acIndexSizeBytes;
             };
           };
           keyLocationMapMaximumGetAttempts = 16;
@@ -55,7 +61,7 @@ let
             source = {
               file = {
                 path = "${blob-dir}/ac_blocks";
-                sizeBytes = 1 * 1024 * 1024 * 1024; # 1 GB
+                sizeBytes = acBlocksSizeBytes;
               };
             };
             spareBlocks = 3;
@@ -107,17 +113,17 @@ in
         mkdir -p ${blob-dir}
 
         if [ ! -f ${blob-dir}/cas_index ]; then
-          truncate -s 16M ${blob-dir}/cas_index
+          truncate -s ${toString casIndexSizeBytes} ${blob-dir}/cas_index
         fi
         if [ ! -f ${blob-dir}/cas_blocks ]; then
-          truncate -s 50G ${blob-dir}/cas_blocks
+          truncate -s ${toString casBlocksSizeBytes} ${blob-dir}/cas_blocks
         fi
 
         if [ ! -f ${blob-dir}/ac_index ]; then
-          truncate -s 16M ${blob-dir}/ac_index
+          truncate -s ${toString acIndexSizeBytes} ${blob-dir}/ac_index
         fi
         if [ ! -f ${blob-dir}/ac_blocks ]; then
-          truncate -s 1G ${blob-dir}/ac_blocks
+          truncate -s ${toString acBlocksSizeBytes} ${blob-dir}/ac_blocks
         fi
       '';
       ExecStart = "${bb-storage-pkg}/bin/bb_storage ${configFile}";
