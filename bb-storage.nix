@@ -7,10 +7,10 @@ let
 
   blob-dir = "/var/lib/rbe-storage";
 
-  casBlocksSizeBytes = 100 * 1024 * 1024 * 1024;  // 100 G
+  casBlocksSizeBytes = 100 * 1024 * 1024 * 1024;  # 100 G
   casIndexSizeBytes = 256 * 1024 * 1024;
 
-  acBlocksSizeBytes = 8 * 1024 * 1024 * 1024;   // 8G action cache
+  acBlocksSizeBytes = 8 * 1024 * 1024 * 1024;     # 8G action cache
   acIndexSizeBytes = 64 * 1024 * 1024;
 
   bb-storage-config = {
