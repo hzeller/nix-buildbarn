@@ -83,6 +83,8 @@ sudo nsenter -t $(systemctl show -p MainPID --value bb-runner.service) -m sh
 sh-5.3# ls
 ```
 
+sudo nsenter -t $(pgrep -x bb_runner) -m ls -l lib bin usr/bin
+
 ## Using buildbarn from bazel
 
 

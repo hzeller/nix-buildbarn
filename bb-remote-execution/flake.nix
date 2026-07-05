@@ -25,6 +25,10 @@
 
 
 
+          patches = [
+            ./patches/runner-command-wrapper.patch
+          ];
+
           postPatch = ''
             sed -i 's/go 1.26.4/go 1.26.3/g' go.mod
           '';

@@ -1,0 +1,27 @@
+diff --git a/cmd/bb_runner/main.go b/cmd/bb_runner/main.go
+index 3345749..a44d98f 100644
+--- a/cmd/bb_runner/main.go
++++ b/cmd/bb_runner/main.go
+@@ -3,6 +3,7 @@ package main
+ import (
+ 	"context"
+ 	"os"
++	"os/exec"
+ 	"runtime"
+ 	"time"
+ 
+@@ -64,6 +65,14 @@ func main() {
+ 			commandCreator = runner.NewPlainCommandCreator(sysProcAttr)
+ 		}
+ 
++		if wrapper := os.Getenv("BB_RUNNER_COMMAND_WRAPPER"); wrapper != "" {
++			baseCommandCreator := commandCreator
++			commandCreator = func(ctx context.Context, arguments []string, inputRootDirectory *path.Builder, workingDirectoryParser path.Parser, pathVariable string) (*exec.Cmd, error) {
++				arguments = append([]string{wrapper}, arguments...)
++				return baseCommandCreator(ctx, arguments, inputRootDirectory, workingDirectoryParser, pathVariable)
++			}
++		}
++
+ 		r := runner.NewLocalRunner(
+ 			buildDirectory,
+ 			buildDirectoryPath,

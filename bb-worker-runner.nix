@@ -77,7 +77,7 @@ let
       coreutils bash gawk gnused gnutar
       gzip bzip2 xz zstd unzip
       file findutils git python3 timg
-      glibc gcc zlib
+      glibc glibc.dev gcc zlib zlib.dev linuxHeaders
     ];
     runScript = "${bb-re-pkg}/bin/bb_runner";
   };
@@ -124,6 +124,8 @@ in
       ProtectHome = true;
       PrivateTmp = true;
       ReadWritePaths = [ base-dir ];
+      # This is our launcher script that makes nix store paths happen if needed.
+      Environment = [ "BB_RUNNER_COMMAND_WRAPPER=${./nix-runner-wrapper.sh}" ];
     };
   };
 
