@@ -43,7 +43,7 @@ let
         buildDirectoryPath = "${base-dir}/worker-${id}/build";
         cacheDirectoryPath = "${base-dir}/worker-${id}/cache";
         maximumCacheFileCount = 10000;
-        maximumCacheSizeBytes = 1000000000; # 1 GB
+        maximumCacheSizeBytes = 20000000000; # 20 GB
         cacheReplacementPolicy = "LEAST_RECENTLY_USED";
       };
       runners = [

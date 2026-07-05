@@ -26,7 +26,7 @@ let
             source = {
               file = {
                 path = "${blob-dir}/cas_blocks";
-                sizeBytes = 10 * 1024 * 1024 * 1024; # 10 GB
+                sizeBytes = 50 * 1024 * 1024 * 1024; # 50 GB
               };
             };
             spareBlocks = 3;
@@ -110,7 +110,7 @@ in
           truncate -s 16M ${blob-dir}/cas_index
         fi
         if [ ! -f ${blob-dir}/cas_blocks ]; then
-          truncate -s 10G ${blob-dir}/cas_blocks
+          truncate -s 50G ${blob-dir}/cas_blocks
         fi
 
         if [ ! -f ${blob-dir}/ac_index ]; then
