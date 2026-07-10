@@ -121,8 +121,8 @@ in
   systemd.services.bb-worker = {
     description = "Buildbarn Worker";
     wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" "bb-runner.service"];
-    requires = [ "bb-runner.service" ];
+    after = [ "network.target" "bb-runner.service" "nix-daemon.service"];
+    requires = [ "bb-runner.service" "nix-daemon.service" ];
 
     serviceConfig = {
       User = "rbe-runner";
@@ -146,6 +146,13 @@ in
       ProtectSystem = "strict";
       ProtectHome = true;
       PrivateTmp = true;
+
+      # Since we're about to call nix-store -realise, make sure we see
+      # the outer system daemon and talk to it.
+      BindPaths = [ "/nix/var/nix/daemon-socket" ];
+      BindReadOnlyPaths = [ "/etc/ssl/certs" ];  # validate HTTPS downloads
+      Environment = [ "NIX_REMOTE=daemon" ];
+
       ReadWritePaths = [ base-dir ];
     };
   };
