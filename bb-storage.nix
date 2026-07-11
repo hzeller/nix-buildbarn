@@ -14,6 +14,10 @@ let
   acIndexSizeBytes = 64 * 1024 * 1024;
 
   bb-storage-config = {
+    # The --remote_cach_compression does not seem to work (just hangs)
+    #supportedCompressors = [ "ZSTD" ];
+    #zstdPool = {};
+
     contentAddressableStorage = {
       backend = {
         local = {

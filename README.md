@@ -59,6 +59,14 @@ that the hostnames point to to your scheduler machine):
     ];
 ```
 
+## Cache proxy
+
+There is also `bb-storage-envoy-proxy.nix` that will set up an http2
+endpoint, that compresses over the wire, then talks to bb-storage. Set this
+up locally on the same machine that has bb-storage.
+
+(TODO: verify that it actually does what we expect).
+
 ## Debugging
 
 ### journalctl
@@ -115,4 +123,11 @@ you're not on that network :)
 build --remote_cache=grpc://rbe:8980
 build --remote_executor=grpc://rbe:8981
 ```
-)
+
+### With Proxy
+If you have set up the cache proxy, change the endpoint of the cache to port
+8100:
+
+```
+build --remote_cache=grpc://rbe:8100
+```
