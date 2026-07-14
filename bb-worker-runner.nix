@@ -77,7 +77,9 @@ let
       coreutils bash gawk gnused gnutar
       gzip bzip2 xz zstd unzip
       file findutils git python3
-      glibc glibc.dev gcc zlib zlib.dev linuxHeaders
+      gnumake glibc glibc.dev gcc zlib zlib.dev linuxHeaders
+      # Some clang compiler link tinfo, and worse, ancient tinfo5
+      ncurses ncurses5
     ];
     runScript = "${bb-re-pkg}/bin/bb_runner";
   };
