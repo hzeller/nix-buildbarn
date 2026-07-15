@@ -80,6 +80,8 @@ let
       gnumake glibc glibc.dev gcc zlib zlib.dev linuxHeaders
       # Some clang compiler link tinfo, and worse, ancient tinfo5
       ncurses ncurses5
+      # things found in klayout
+      expat
     ];
     runScript = "${bb-re-pkg}/bin/bb_runner";
   };
