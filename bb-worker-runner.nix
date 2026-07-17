@@ -47,12 +47,15 @@ let
         cacheReplacementPolicy = "LEAST_RECENTLY_USED";
       };
       runners = [
+        # General worker
         {
           endpoint = { address = "unix://${base-dir}/worker-${id}/runner.sock"; };
           concurrency = default-use-cores;
           workerId = { id = "empty-${id}-${config.networking.hostName}"; };
           platform = {};
         }
+
+        # Also matching with specific os family.
         {
           endpoint = { address = "unix://${base-dir}/worker-${id}/runner.sock"; };
           concurrency = default-use-cores;
@@ -60,6 +63,18 @@ let
           platform = {
             properties = [
               { name = "OSFamily"; value = "linux"; }
+            ];
+          };
+        }
+
+        # Some worker that advertises a bit larger memory
+        {
+          endpoint = { address = "unix://${base-dir}/worker-${id}/runner.sock"; };
+          concurrency = 1;
+          workerId = { id = "empty-${id}-${config.networking.hostName}"; };
+          platform = {
+            properties = [
+              { name = "mem"; value = "16g"; }
             ];
           };
         }
