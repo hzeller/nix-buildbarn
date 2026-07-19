@@ -97,6 +97,8 @@ let
       ncurses ncurses5
       # things found in klayout
       expat
+      # openroad assumes this exists
+      pandoc
     ];
     runScript = "${bb-re-pkg}/bin/bb_runner";
   };
